@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Money Seeker by WealthBros · Live GEX Levels</title>
+<meta name="description" content="Money Seeker by WealthBros: live gamma exposure (GEX) levels. King node, Call Wall, Put Wall, Flip and Chud Nodes on a live chart.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0d14; --panel:#141a26; --panel2:#101521; --line:#222b3d; --line2:#2c3850;
+  --blue:#1a8cff; --blue2:#4aa8ff; --navy:#0b2a5b; --navy2:#0f1f3d;
+  --text:#ffffff; --muted:#9aa6bd; --dim:#6b778f;
+  --king:#fde047; --call:#22c55e; --put:#ef4444; --chud:#e5e7eb; --flip:#8b5cf6;
+  --r:16px; --max:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{width:100%;max-width:var(--max);margin:0 auto;padding:0 20px}
+section{padding:72px 0;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue2)}
+h1,h2,h3{line-height:1.12;letter-spacing:-.025em}
+h2{font-size:clamp(28px,5vw,44px);font-weight:800;margin:12px 0 14px}
+.lead{color:var(--muted);font-size:17px;max-width:640px}
+.center{text-align:center}.center .lead{margin:0 auto}
+.grad{background:linear-gradient(92deg,#fff 0%,#9fd0ff 45%,var(--blue) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:15px;border-radius:12px;
+  padding:13px 22px;transition:transform .15s ease,box-shadow .2s ease,background .2s ease;white-space:nowrap;border:1px solid transparent}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(180deg,#3a9dff,var(--blue));color:#fff;box-shadow:0 8px 28px -8px rgba(26,140,255,.75),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-primary:hover{box-shadow:0 12px 36px -8px rgba(26,140,255,.95),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-discord{background:#5865f2;color:#fff;box-shadow:0 8px 28px -10px rgba(88,101,242,.8),inset 0 1px 0 rgba(255,255,255,.2)}
+.btn-ghost{background:rgba(255,255,255,.04);border-color:var(--line2);color:#fff}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+.btn-sm{padding:9px 16px;font-size:14px;border-radius:10px}
+.btn svg{width:18px;height:18px;flex:none}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;background:rgba(10,13,20,.72);backdrop-filter:saturate(160%) blur(14px);-webkit-backdrop-filter:saturate(160%) blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav .wrap{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:12px;flex:none}
+.brand img{height:22px;width:auto}
+.brand .sep{width:1px;height:22px;background:var(--line2)}
+.brand .pname{font-weight:800;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.brand .pname span{color:var(--blue2)}
+.links{display:none;gap:4px;margin-left:auto}
+.links a{color:var(--muted);font-size:14px;font-weight:500;padding:8px 12px;border-radius:8px;transition:color .15s,background .15s}
+.links a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.nav .btn{margin-left:auto}
+.brand .sep,.brand .pname{display:none}
+@media (min-width:400px){.brand .sep,.brand .pname{display:block}}
+
+/* hero */
+.hero{padding:56px 0 40px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-200px -20% auto;height:900px;pointer-events:none;
+  background:radial-gradient(600px 380px at 50% 20%,rgba(26,140,255,.28),transparent 70%),
+             radial-gradient(500px 300px at 85% 50%,rgba(11,42,91,.6),transparent 70%),
+             radial-gradient(420px 260px at 10% 60%,rgba(253,224,71,.06),transparent 70%)}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:48px 48px;mask-image:radial-gradient(ellipse 70% 55% at 50% 30%,#000 30%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 70% 55% at 50% 30%,#000 30%,transparent 75%)}
+.hero .wrap{position:relative;z-index:1;text-align:center}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;border-radius:999px;font-size:13px;font-weight:600;color:#cfe5ff;
+  background:rgba(26,140,255,.1);border:1px solid rgba(26,140,255,.3)}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--call);box-shadow:0 0 0 4px rgba(34,197,94,.18)}
+.hero h1{font-size:clamp(36px,8.4vw,68px);font-weight:900;margin:22px auto 18px;max-width:900px}
+.hero h1 .king{color:var(--king);text-shadow:0 0 32px rgba(253,224,71,.35)}
+.hero .lead{margin:0 auto;font-size:clamp(16px,2.2vw,19px);max-width:700px}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:22px auto 0;max-width:700px}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.chip i{width:9px;height:9px;border-radius:2px;display:block}
+.cta{display:flex;flex-direction:column;gap:12px;justify-content:center;margin-top:30px}
+.frame{position:relative;margin:52px auto 0;max-width:1080px;border-radius:14px;padding:1px;
+  background:linear-gradient(180deg,rgba(74,168,255,.7),rgba(26,140,255,.15) 40%,rgba(255,255,255,.06));
+  box-shadow:0 0 0 1px rgba(26,140,255,.15),0 30px 120px -20px rgba(26,140,255,.55),0 50px 100px -40px rgba(0,0,0,.9)}
+.frame::before{content:"";position:absolute;inset:-60px -40px auto;height:70%;z-index:-1;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(26,140,255,.35),transparent);filter:blur(30px)}
+.frame-in{border-radius:13px;overflow:hidden;background:#0c1018}
+.bar{display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;background:linear-gradient(180deg,#171e2c,#121825);border-bottom:1px solid var(--line)}
+.bar i{width:11px;height:11px;border-radius:50%;background:#2a3346;display:block}
+.bar i:nth-child(1){background:#ff5f57}.bar i:nth-child(2){background:#febc2e}.bar i:nth-child(3){background:#28c840}
+.url{flex:1;max-width:340px;margin:0 auto;height:24px;border-radius:7px;background:#0b0f17;border:1px solid var(--line);font-size:12px;color:var(--dim);
+  display:flex;align-items:center;justify-content:center;gap:6px}
+.url svg{width:11px;height:11px}
+.bar .sp{width:49px}
+.frame-in picture{display:block}
+@media (max-width:559px){.frame{max-width:400px;margin-top:40px}.frame-in{max-height:640px;position:relative}.frame-in::after{content:"";position:absolute;inset:auto 0 0;height:90px;background:linear-gradient(180deg,transparent,#0a0d14)}}
+
+/* features */
+.grid{display:grid;gap:16px;margin-top:40px}
+.card{position:relative;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r);padding:24px;
+  transition:border-color .2s,transform .2s,box-shadow .2s;overflow:hidden}
+.card:hover{border-color:rgba(26,140,255,.45);transform:translateY(-2px);box-shadow:0 18px 50px -24px rgba(26,140,255,.5)}
+.card::after{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(74,168,255,.5),transparent);opacity:.6}
+.ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin-bottom:16px;
+  background:linear-gradient(180deg,rgba(26,140,255,.25),rgba(11,42,91,.5));border:1px solid rgba(26,140,255,.35);color:#9fd0ff}
+.ico svg{width:22px;height:22px}
+.card h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.card p{color:var(--muted);font-size:15px}
+.feat-wide{display:grid;gap:20px;align-items:center}
+.feat-wide{padding-bottom:0}
+.feat-wide .mwrap{position:relative;height:230px;max-width:250px;width:100%;margin:0 auto;overflow:hidden;border-radius:22px 22px 0 0;border:1px solid var(--line2);border-bottom:0;box-shadow:0 0 60px -12px rgba(26,140,255,.45)}
+.feat-wide .mwrap::after{content:"";position:absolute;inset:auto 0 0;height:60px;background:linear-gradient(180deg,transparent,var(--panel2))}
+.feat-wide .mshot{width:100%;height:auto}
+.feat-wide .txt{padding-bottom:24px}
+
+/* how */
+.steps{display:grid;gap:16px;margin-top:40px;counter-reset:s}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:24px;position:relative}
+.step .n{font-size:13px;font-weight:800;color:var(--blue2);letter-spacing:.1em}
+.step h3{font-size:18px;margin:8px 0 6px}
+.step p{color:var(--muted);font-size:15px}
+
+/* levels */
+.levels{background:linear-gradient(180deg,transparent,rgba(11,42,91,.18) 30%,rgba(11,42,91,.18) 70%,transparent)}
+.lv{display:grid;gap:14px;margin-top:40px}
+.lvc{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px;position:relative;overflow:hidden}
+.lvc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.lvc .tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 10px;border-radius:7px;color:var(--tc,#0a0d14);background:var(--c)}
+.lvc h3{font-size:19px;margin:14px 0 6px}
+.lvc p{color:var(--muted);font-size:15px}
+.lvc .note{margin-top:12px;font-size:13px;color:#fef3a0;background:rgba(253,224,71,.08);border:1px solid rgba(253,224,71,.25);border-radius:9px;padding:8px 11px}
+.lvc.king{border-color:rgba(253,224,71,.4);background:linear-gradient(180deg,rgba(253,224,71,.08),var(--panel) 60%);box-shadow:0 0 50px -20px rgba(253,224,71,.45)}
+.lvc.flip .tag{--tc:#fff}.lvc.put .tag{--tc:#fff}
+
+/* heatmap */
+.show{display:grid;gap:36px;align-items:center}
+.show ul{list-style:none;margin-top:22px;display:grid;gap:12px}
+.show li{display:flex;gap:12px;color:#d6deeb;font-size:15px}
+.show li svg{flex:none;width:20px;height:20px;color:var(--blue);margin-top:2px}
+.ladder{position:relative;border-radius:16px;padding:1px;background:linear-gradient(180deg,rgba(74,168,255,.55),rgba(255,255,255,.05));
+  box-shadow:0 30px 90px -30px rgba(26,140,255,.55)}
+.ladder-in{border-radius:15px;overflow:hidden;max-height:620px;position:relative;background:#0c1018}
+.ladder-in::after{content:"";position:absolute;inset:auto 0 0;height:140px;background:linear-gradient(180deg,transparent,#0a0d14)}
+.ladder .cap{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:2;font-size:12px;color:var(--muted);white-space:nowrap}
+.ladder .cap a{color:var(--blue2);font-weight:600}
+
+/* discord band */
+.band{border-radius:24px;padding:40px 24px;text-align:center;position:relative;overflow:hidden;border:1px solid rgba(26,140,255,.3);
+  background:radial-gradient(600px 240px at 50% 0%,rgba(26,140,255,.35),transparent 70%),linear-gradient(180deg,var(--navy2),#0c1424)}
+.band h2{margin-top:10px}
+.band .cta{margin-top:24px}
+
+/* pricing */
+.plans{display:grid;gap:16px;margin-top:40px;align-items:stretch}
+.plan{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;position:relative}
+.plan.pop{border-color:rgba(26,140,255,.6);background:linear-gradient(180deg,rgba(26,140,255,.12),var(--panel) 45%);box-shadow:0 0 0 1px rgba(26,140,255,.25),0 24px 70px -28px rgba(26,140,255,.7)}
+.plan .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--blue);color:#fff;padding:5px 12px;border-radius:999px;white-space:nowrap}
+.plan h3{font-size:17px;font-weight:700;color:#cfe5ff}
+.price{display:flex;align-items:baseline;gap:6px;margin:12px 0 4px}
+.price b{font-size:44px;font-weight:900;letter-spacing:-.03em}
+.price span{color:var(--muted);font-size:15px}
+.price em{font-style:normal;margin-left:auto;align-self:center;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fef3a0;border:1px dashed rgba(253,224,71,.45);border-radius:6px;padding:3px 7px}
+.plan .sub{color:var(--muted);font-size:14px;min-height:22px}
+.plan ul{list-style:none;margin:20px 0 26px;display:grid;gap:11px;flex:1}
+.plan li{display:flex;gap:10px;font-size:15px;color:#dbe3f0}
+.plan li svg{flex:none;width:18px;height:18px;color:var(--blue2);margin-top:3px}
+.plan .btn{width:100%}
+.ph{display:inline-flex;align-items:center;gap:8px;margin-top:22px;font-size:13px;color:#fef3a0;background:rgba(253,224,71,.08);border:1px dashed rgba(253,224,71,.4);padding:7px 14px;border-radius:999px}
+
+/* faq */
+.faq{max-width:780px;margin:36px auto 0;display:grid;gap:12px}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0 20px;transition:border-color .2s}
+details[open]{border-color:rgba(26,140,255,.45)}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0;font-weight:700;font-size:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:22px;font-weight:400;color:var(--blue2);transition:transform .2s;flex:none}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);font-size:15px;padding:0 0 18px}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:40px 0 48px;margin-top:24px;background:linear-gradient(180deg,transparent,rgba(11,42,91,.15))}
+.foot{display:flex;flex-direction:column;gap:18px}
+.foot img{height:22px;width:auto;align-self:flex-start}
+.foot nav{display:flex;flex-wrap:wrap;gap:6px 18px}
+.foot nav a{color:var(--muted);font-size:14px}
+.foot nav a:hover{color:#fff}
+.disc{color:var(--dim);font-size:13px;max-width:760px}
+.disc strong{color:#cbd5e1}
+.copy{color:var(--dim);font-size:13px}
+
+/* ---------- breakpoints ---------- */
+@media (min-width:560px){
+  .cta{flex-direction:row}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .lv{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:559px){
+  .hero-shot-d .bar .url{font-size:11px}
+}
+@media (min-width:880px){
+  section{padding:100px 0}
+  .links{display:flex}
+  .nav .btn{margin-left:8px}
+  .hero{padding:84px 0 48px}
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .feat-wide{grid-column:span 2;grid-template-columns:1.1fr .9fr;align-items:end}
+  .feat-wide .mwrap{margin-top:8px}
+  .steps{grid-template-columns:repeat(3,1fr)}
+  .lv{grid-template-columns:repeat(6,1fr)}
+  .lv .lvc{grid-column:span 2}
+  .lv .lvc.king{grid-column:span 3}
+  .lv .lvc.flip{grid-column:span 3;order:-1}
+  .lv .lvc.king{order:-2}
+  .show{grid-template-columns:.9fr 1.1fr;gap:56px}
+  .plans{grid-template-columns:repeat(3,1fr)}
+  .band{padding:64px 40px}
+  .foot{flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:center}
+  .foot .disc,.foot .copy{flex-basis:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="WealthBros Money Seeker home">
+      <img src="wb_logo_dark.png" alt="WealthBros">
+      <span class="sep"></span>
+      <span class="pname">Money <span>Seeker</span></span>
+    </a>
+    <nav class="links" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#discord">Discord</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="#">Launch App</a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <span class="pill"><span class="dot"></span>Live GEX levels · by WealthBros</span>
+    <h1>See where the market is <span class="grad">pinned</span> before it&nbsp;moves</h1>
+    <p class="lead">Money Seeker maps gamma exposure from the options chain onto a live chart, so you can see the <strong style="color:#fff">King node</strong>, <strong style="color:#fff">Call Wall</strong>, <strong style="color:#fff">Put Wall</strong>, <strong style="color:#fff">Flip</strong> and <strong style="color:#fff">Chud Nodes</strong> at a glance, before the open and through the session.</p>
+    <div class="chips" aria-hidden="true">
+      <span class="chip"><i style="background:var(--king)"></i>King</span>
+      <span class="chip"><i style="background:var(--call)"></i>Call Wall</span>
+      <span class="chip"><i style="background:var(--put)"></i>Put Wall</span>
+      <span class="chip"><i style="background:var(--flip)"></i>Flip</span>
+      <span class="chip"><i style="background:var(--chud)"></i>Chud Nodes</span>
+    </div>
+    <div class="cta">
+      <a class="btn btn-discord" href="#discord">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.4C.6 9 -.3 13.6.1 18.1a19.9 19.9 0 0 0 6 3l1.3-2a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2a19.8 19.8 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8.5 15.4c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm7 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
+        Join the Discord</a>
+      <a class="btn btn-ghost" href="#">Open the chart
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+
+    <div class="frame">
+      <div class="frame-in">
+        <div class="bar"><i></i><i></i><i></i>
+          <div class="url"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>money-seeker · SPY</div>
+          <span class="sp"></span>
+        </div>
+        <picture><source media="(max-width:559px)" srcset="preview_mobile.png" width="430" height="900"><img src="preview_desktop.png" width="1280" height="800" alt="Money Seeker live SPY chart with King, Call Wall, Put Wall, Flip and Chud Node lines and a net gamma ladder"></picture>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">Features</span>
+      <h2>Everything you need to read the&nbsp;pin</h2>
+      <p class="lead">Built for traders who want the key gamma levels mapped out, not a wall of numbers.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/><path d="M3 8h18" stroke-dasharray="2 3"/></svg></div>
+        <h3>Live GEX chart overlay</h3>
+        <p>Candles on 1m, 5m or daily with every key level drawn right on the chart and a net gamma ladder alongside.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="18" rx="1.5"/><path d="M3 9h7M3 14h7M14 7h7M14 12h7M14 17h7"/></svg></div>
+        <h3>Heatmap ladders for any ticker</h3>
+        <p>Strike-by-strike gamma heatmaps for indexes, ETFs and single names, side by side on one board.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></div>
+        <h3>Discord alerts before the open</h3>
+        <p>Every morning, the day's levels land in the WealthBros Discord so your plan is set before the bell.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 15h3M8 18h6"/></svg></div>
+        <h3>CPI &amp; event-day game plans</h3>
+        <p>On CPI, FOMC and other big data days, get a level-by-level game plan for how price may react around the walls.</p>
+      </div>
+      <div class="card feat-wide">
+        <div class="txt">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg></div>
+          <h3>Works on mobile</h3>
+          <p>The full chart, levels panel and ladder adapt to your phone, so you can check the King node from anywhere.</p>
+        </div>
+        <div class="mwrap"><img class="mshot" src="preview_mobile.png" width="430" height="900" alt="Money Seeker on a phone" loading="lazy"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="padding-top:0">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">How it works</span>
+      <h2>From options chain to game plan</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">STEP 01</span><h3>We crunch the chain</h3><p>Open interest and gamma for every strike are rolled up into net dollar gamma exposure for the selected expiration.</p></div>
+      <div class="step"><span class="n">STEP 02</span><h3>Levels get mapped</h3><p>The King, Call Wall, Put Wall, Flip and Chud Nodes are pulled out and drawn straight onto the chart.</p></div>
+      <div class="step"><span class="n">STEP 03</span><h3>You trade your plan</h3><p>Use the levels as a map for where price may stall, pin or speed up, alongside your own analysis and risk rules.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- LEVELS -->
+<section class="levels" id="levels">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">The cheat sheet</span>
+      <h2>What the levels mean</h2>
+      <p class="lead">Five lines, in plain English.</p>
+    </div>
+    <div class="lv">
+      <div class="lvc king" style="--c:var(--king)">
+        <span class="tag">♛ King</span>
+        <h3>The magnet</h3>
+        <p>The biggest gamma strike. Price tends to get pulled toward it and pinned there.</p>
+        <div class="note">Heads up: the King can sit on the same strike as the Call Wall sometimes. The chart labels it "King · Call Wall".</div>
+      </div>
+      <div class="lvc" style="--c:var(--call)">
+        <span class="tag">Call Wall</span>
+        <h3>The ceiling</h3>
+        <p>Biggest positive gamma above price, where rallies tend to stall.</p>
+      </div>
+      <div class="lvc put" style="--c:var(--put)">
+        <span class="tag">Put Wall</span>
+        <h3>The floor</h3>
+        <p>Most negative gamma below price, where selloffs tend to find support.</p>
+      </div>
+      <div class="lvc" style="--c:var(--chud)">
+        <span class="tag">Chud Node</span>
+        <h3>The speed bump</h3>
+        <p>The next biggest node above or below price. Moves tend to pause here.</p>
+      </div>
+      <div class="lvc flip" style="--c:var(--flip)">
+        <span class="tag">Flip</span>
+        <h3>The mood switch</h3>
+        <p>Where gamma turns from positive to negative. Above it, moves tend to stay slow and pinned. Below it, moves tend to speed up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HEATMAP -->
+<section id="heatmap">
+  <div class="wrap show">
+    <div>
+      <span class="eyebrow">Heatmap ladders</span>
+      <h2>Your whole watchlist on one&nbsp;board</h2>
+      <p class="lead">Line up SPY, QQQ, TSLA, META or any optionable ticker and see every strike's gamma colored from heavy put to heavy call, with the key levels tagged.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>King, walls, Chud Nodes and Flip tagged on every ladder</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Spot price row highlighted so you know where you are</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Per-ticker header with spot, net gamma and expiration</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Built to share in Discord: one image, whole game plan</li>
+      </ul>
+    </div>
+    <div class="ladder">
+      <div class="ladder-in">
+        <img src="ladder_2026-10-16spy_qqq_tsla_meta.png" width="1408" height="2011" alt="GEX heatmap ladders for SPY, QQQ, TSLA and META, Oct 16 expiration" loading="lazy">
+      </div>
+      <span class="cap">SPY · QQQ · TSLA · META · Exp Oct 16 · <a href="ladder_2026-10-16spy_qqq_tsla_meta.png" target="_blank" rel="noopener">View full image ↗</a></span>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="padding-top:0">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">Pricing</span>
+      <h2>Start free. Upgrade when you're ready.</h2>
+      <p class="lead">Simple tiers for every kind of trader.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <h3>Free</h3>
+        <div class="price"><b>$0</b><span>/mo</span></div>
+        <p class="sub">Get a feel for the levels.</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Daily SPY / SPX / QQQ levels in Discord</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>King, walls &amp; Flip for the indexes</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Community chat</li>
+        </ul>
+        <a class="btn btn-ghost" href="#discord">Join the Discord</a>
+      </div>
+      <div class="plan pop">
+        <span class="badge">Recommended</span>
+        <h3>Pro</h3>
+        <div class="price"><b>$—</b><span>/mo</span><em>Placeholder</em></div>
+        <p class="sub">Every ticker, live.</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Everything in Free</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>All tickers, any expiration</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Live GEX chart overlay</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Heatmap ladders</li>
+        </ul>
+        <a class="btn btn-primary" href="#">Open the chart</a>
+      </div>
+      <div class="plan">
+        <h3>Elite</h3>
+        <div class="price"><b>$—</b><span>/mo</span><em>Placeholder</em></div>
+        <p class="sub">For event-day traders.</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Everything in Pro</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Morning Discord alerts before the open</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>CPI &amp; event-day game plans</li>
+        </ul>
+        <a class="btn btn-ghost" href="#discord">Get Elite</a>
+      </div>
+    </div>
+    <div class="center"><span class="ph">⚠ Pricing placeholder: tiers and prices are not final.</span></div>
+  </div>
+</section>
+
+<!-- DISCORD -->
+<section id="discord" style="padding-top:0">
+  <div class="wrap">
+    <div class="band">
+      <span class="eyebrow">WealthBros Discord</span>
+      <h2>Get the levels where the community&nbsp;trades</h2>
+      <p class="lead" style="margin:0 auto">Daily GEX levels, morning alerts and event-day game plans, posted where WealthBros traders already talk shop.</p>
+      <div class="cta">
+        <a class="btn btn-discord" href="#discord" title="Discord invite link goes here">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.6 1.3a18.4 18.4 0 0 0-5.6 0L8.6 3a19.7 19.7 0 0 0-4.9 1.4C.6 9 -.3 13.6.1 18.1a19.9 19.9 0 0 0 6 3l1.3-2a12.9 12.9 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2a19.8 19.8 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8.5 15.4c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm7 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
+          Join the Discord</a>
+        <a class="btn btn-ghost" href="#">Launch App</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow">FAQ</span>
+      <h2>Questions, answered</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Is this financial advice?</summary>
+        <p>No. Money Seeker shows levels calculated from public options data for educational purposes. It does not tell you what to buy or sell. Always do your own research and manage your own risk.</p>
+      </details>
+      <details>
+        <summary>What is GEX (gamma exposure)?</summary>
+        <p>GEX estimates how much options dealers may need to hedge as price moves, strike by strike. Big positive gamma strikes tend to act like magnets or ceilings; negative gamma areas tend to let moves run faster.</p>
+      </details>
+      <details>
+        <summary>Which tickers are supported?</summary>
+        <p>SPY, SPX, QQQ and most optionable stocks and ETFs. Type a ticker into the app, pick an expiration, and the levels load on the chart.</p>
+      </details>
+      <details>
+        <summary>Why are the King and Call Wall sometimes the same line?</summary>
+        <p>The King is the single biggest gamma strike; the Call Wall is the biggest positive strike above price. When those land on the same strike, the chart shows one combined "King · Call Wall" line.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <img src="wb_logo_dark.png" alt="WealthBros">
+    <nav aria-label="Footer">
+      <a href="#features">Features</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#discord">Discord</a><a href="#">Launch App</a>
+    </nav>
+    <p class="disc"><strong>Not financial advice. For educational purposes only.</strong> Options and trading involve substantial risk. GEX levels are estimates based on delayed public data and may be inaccurate or change without notice.</p>
+    <p class="copy">© 2026 WealthBros. Money Seeker is a WealthBros product.</p>
+  </div>
+</footer>
+
+</body>
+</html>
